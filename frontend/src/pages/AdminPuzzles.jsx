@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "@/lib/api";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 
@@ -15,14 +15,14 @@ export default function AdminPuzzles() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     setLoading(true);
     const { data } = await api.get("/admin/puzzles");
     setPuzzles(data);
     setLoading(false);
-  };
+  }, []);
 
-  useEffect(() => { fetchAll(); }, []);
+  useEffect(() => { fetchAll(); }, [fetchAll]);
 
   const filtered = filter === "all" ? puzzles : puzzles.filter((p) => p.difficulty === filter);
 

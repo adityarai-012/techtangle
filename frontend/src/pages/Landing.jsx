@@ -92,7 +92,7 @@ export default function Landing() {
             { icon: Zap, title: "Instant feedback", desc: "Wrong answers reveal the definition — turning every miss into a learning moment.", color: "amber" },
             { icon: Trophy, title: "Compete & track", desc: "Global leaderboard, achievement badges, streaks, and full profile analytics.", color: "emerald" },
           ].map((f, i) => (
-            <div key={i} className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-shadow animate-fade-up" style={{ animationDelay: `${i * 80}ms` }}>
+            <div key={f.title} className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-shadow animate-fade-up" style={{ animationDelay: `${i * 80}ms` }}>
               <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center mb-4">
                 <f.icon className="text-white" size={20} />
               </div>
