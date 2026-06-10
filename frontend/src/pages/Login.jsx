@@ -21,9 +21,7 @@ export default function Login() {
       setError(res.error || "Login failed");
       return;
     }
-    const role = res?.user?.role;
-    // useAuth state will update; redirect by reading from API result if available
-    navigate(role === "admin" ? "/admin" : "/dashboard");
+    navigate(res.user?.role === "admin" ? "/admin" : "/dashboard");
   };
 
   return (

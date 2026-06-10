@@ -246,6 +246,45 @@ async def next_puzzle(level: str, user: dict = Depends(get_current_user)):
         return {"puzzle": None, "message": "All puzzles solved in this level!"}
     return {"puzzle": serialize_puzzle_public(docs[0])}
 
+def _check_next_unlock(level: str, new_progress: dict, unlocked: list[str]) -> Optional[str]:
+    """If progress in `level` hit threshold, append the next tier to `unlocked` and return it."""
+    if new_progress.get(level, 0) < PUZZLES_TO_UNLOCK_NEXT:
+        return None
+    try:
+        next_level = LEVEL_ORDER[LEVEL_ORDER.index(level) + 1]
+    except (ValueError, IndexError):
+        return None
+    if next_level in unlocked:
+        return None
+    unlocked.append(next_level)
+    return next_level
+
+
+def _compute_new_badges(existing: list[str], new_progress: dict, new_streak: int, new_solved_total: int) -> list[str]:
+    badges = list(existing)
+    def add(b: str) -> None:
+        if b not in badges:
+            badges.append(b)
+    if new_solved_total == 1:
+        add("First Solve")
+    if new_streak >= 5:
+        add("5x Streak")
+    if new_streak >= 10:
+        add("Hot Streak")
+    for lvl in LEVEL_ORDER:
+        if new_progress.get(lvl, 0) >= PUZZLES_TO_UNLOCK_NEXT:
+            add(f"{lvl.capitalize()} Conqueror")
+    return badges
+
+
+def _highest_unlocked(unlocked: list[str]) -> str:
+    highest = "beginner"
+    for lvl in LEVEL_ORDER:
+        if lvl in unlocked:
+            highest = lvl
+    return highest
+
+
 @api.post("/puzzles/submit")
 async def submit_answer(body: SubmitAnswerIn, user: dict = Depends(get_current_user)):
     if not ObjectId.is_valid(body.puzzle_id):
@@ -257,7 +296,6 @@ async def submit_answer(body: SubmitAnswerIn, user: dict = Depends(get_current_u
     given = body.answer.strip().upper()
     correct = given == puzzle["word"].upper()
 
-    # log attempt
     await db.attempts.insert_one({
         "user_id": str(user["_id"]),
         "puzzle_id": body.puzzle_id,
@@ -273,11 +311,10 @@ async def submit_answer(body: SubmitAnswerIn, user: dict = Depends(get_current_u
     }
 
     if not correct:
-        # streak resets on wrong
         await db.users.update_one({"_id": user["_id"]}, {"$set": {"streak": 0}})
         return response_payload
 
-    # check if already counted as solved (avoid double-credit)
+    # avoid double-credit on re-solve
     prior_correct = await db.attempts.count_documents({
         "user_id": str(user["_id"]),
         "puzzle_id": body.puzzle_id,
@@ -286,10 +323,8 @@ async def submit_answer(body: SubmitAnswerIn, user: dict = Depends(get_current_u
     if prior_correct > 1:
         return {**response_payload, "already_solved": True}
 
-    # award points & progress
-    points_reward = puzzle.get("points_reward", 10)
     level = puzzle["difficulty"]
-
+    points_reward = puzzle.get("points_reward", 10)
     new_progress = dict(user.get("level_progress", {}))
     new_progress[level] = new_progress.get(level, 0) + 1
     new_streak = user.get("streak", 0) + 1
@@ -297,41 +332,9 @@ async def submit_answer(body: SubmitAnswerIn, user: dict = Depends(get_current_u
     new_solved_total = user.get("puzzles_solved", 0) + 1
 
     unlocked = list(user.get("unlocked_levels", ["beginner"]))
-    next_unlocked = None
-    if new_progress[level] >= PUZZLES_TO_UNLOCK_NEXT:
-        try:
-            next_level = LEVEL_ORDER[LEVEL_ORDER.index(level) + 1]
-            if next_level not in unlocked:
-                unlocked.append(next_level)
-                next_unlocked = next_level
-        except IndexError:
-            pass
-
-    # badges
-    badges = list(user.get("badges", []))
-    def add_badge(b):
-        if b not in badges:
-            badges.append(b)
-    if new_solved_total == 1:
-        add_badge("First Solve")
-    if new_streak >= 5:
-        add_badge("5x Streak")
-    if new_streak >= 10:
-        add_badge("Hot Streak")
-    if new_progress.get("beginner", 0) >= PUZZLES_TO_UNLOCK_NEXT:
-        add_badge("Beginner Conqueror")
-    if new_progress.get("intermediate", 0) >= PUZZLES_TO_UNLOCK_NEXT:
-        add_badge("Intermediate Conqueror")
-    if new_progress.get("advanced", 0) >= PUZZLES_TO_UNLOCK_NEXT:
-        add_badge("Advanced Conqueror")
-    if new_progress.get("expert", 0) >= PUZZLES_TO_UNLOCK_NEXT:
-        add_badge("Expert Conqueror")
-
-    # update current_level to highest unlocked
-    highest = "beginner"
-    for lvl in LEVEL_ORDER:
-        if lvl in unlocked:
-            highest = lvl
+    next_unlocked = _check_next_unlock(level, new_progress, unlocked)
+    badges = _compute_new_badges(user.get("badges", []), new_progress, new_streak, new_solved_total)
+    highest = _highest_unlocked(unlocked)
 
     await db.users.update_one(
         {"_id": user["_id"]},

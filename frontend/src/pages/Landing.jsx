@@ -62,7 +62,7 @@ export default function Landing() {
                   <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-blue-500 text-white">Beginner</span>
                 </div>
                 <p className="text-slate-700 leading-relaxed mb-6">
-                  "A linear data structure following Last-In-First-Out ordering."
+                  &ldquo;A linear data structure following Last-In-First-Out ordering.&rdquo;
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center mb-6">
                   {["T", "C", "S", "A", "K"].map((c, i) => (

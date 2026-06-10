@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 import api, { formatApiErrorDetail } from "@/lib/api";
 
 const AuthCtx = createContext(null);
@@ -26,38 +26,39 @@ export function AuthProvider({ children }) {
     refreshUser();
   }, [refreshUser]);
 
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     try {
       const { data } = await api.post("/auth/login", { email, password });
       localStorage.setItem("tt_token", data.token);
       setUser(data.user);
-      return { ok: true };
+      return { ok: true, user: data.user };
     } catch (e) {
       return { ok: false, error: formatApiErrorDetail(e.response?.data?.detail) || e.message };
     }
-  };
+  }, []);
 
-  const register = async (name, email, password) => {
+  const register = useCallback(async (name, email, password) => {
     try {
       const { data } = await api.post("/auth/register", { name, email, password });
       localStorage.setItem("tt_token", data.token);
       setUser(data.user);
-      return { ok: true };
+      return { ok: true, user: data.user };
     } catch (e) {
       return { ok: false, error: formatApiErrorDetail(e.response?.data?.detail) || e.message };
     }
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("tt_token");
     setUser(false);
-  };
+  }, []);
 
-  return (
-    <AuthCtx.Provider value={{ user, setUser, login, register, logout, refreshUser }}>
-      {children}
-    </AuthCtx.Provider>
+  const value = useMemo(
+    () => ({ user, setUser, login, register, logout, refreshUser }),
+    [user, login, register, logout, refreshUser]
   );
+
+  return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
 }
 
 export const useAuth = () => useContext(AuthCtx);

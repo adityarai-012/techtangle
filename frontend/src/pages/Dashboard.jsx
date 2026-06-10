@@ -31,8 +31,7 @@ export default function Dashboard() {
       }
     })();
     refreshUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [refreshUser]);
 
   if (!user) return null;
 
