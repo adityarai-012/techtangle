@@ -1,0 +1,100 @@
+{
+  "project_name": "TECHTANGLE",
+  "domain_context": "Gamified Educational Web Platform (SaaS)",
+  "theme": "Light",
+  "archetype": "Archetype 4 (Swiss & High-Contrast) + Tactile Play",
+  "design_philosophy": "Clean, structural clarity of Computer Science met with the tactile, satisfying interaction of a premium gamified learning app (like a high-end adult Duolingo). Focus on distinct visual states for correctness, deep tactile shadows for interaction, and strong typography without childishness.",
+  "typography": {
+    "fonts": {
+      "heading": "Outfit, sans-serif",
+      "body": "IBM Plex Sans, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl font-black tracking-tight",
+      "h2": "text-2xl sm:text-3xl font-bold tracking-tight",
+      "h3": "text-xl font-semibold",
+      "body": "text-base font-normal leading-relaxed text-slate-700",
+      "overline": "text-xs font-bold uppercase tracking-[0.2em] text-slate-500",
+      "puzzle_tile": "text-2xl sm:text-3xl font-bold font-mono"
+    },
+    "guidelines": "Do not use Inter, Roboto, or Space Grotesk. Headings must be tight. Definitions (for wrong answers/hints) should be highly legible using IBM Plex Sans."
+  },
+  "colors": {
+    "background": "#F8FAFC",
+    "surface": "#FFFFFF",
+    "primary": "#0F172A",
+    "secondary": "#334155",
+    "feedback": {
+      "correct": "#10B981",
+      "incorrect": "#EF4444",
+      "streak": "#F59E0B"
+    },
+    "tiers": {
+      "beginner": "#3B82F6",
+      "intermediate": "#8B5CF6",
+      "advanced": "#F59E0B",
+      "expert": "#EF4444"
+    },
+    "borders": "#E2E8F0",
+    "text_primary": "#0F172A",
+    "text_secondary": "#64748B",
+    "guidelines": "No purple/violet gradients on white. If using tier colors, keep them as solid badges or text colors. Base UI must be starkly clean (Slate/White/Black) so that the feedback colors (Emerald/Red) have maximum impact."
+  },
+  "layout_and_spacing": {
+    "global_spacing": "Generous. Use p-8 to p-12 for main sections. Dashboards use p-6.",
+    "dashboard_grid": "Bento Grid Protocol (Control Room Mode). grid-cols-1 md:grid-cols-3 lg:grid-cols-4 with gap-6.",
+    "puzzle_arena": "Center-focused layout. Scrambled letters must use Flexbox with gap-3 or gap-4 and wrap elegantly."
+  },
+  "components": {
+    "anagram_tiles": "Tactile Neo-Brutalist. bg-white text-slate-900 border-2 border-slate-300 shadow-[0_4px_0_0_#cbd5e1] rounded-lg transition-all active:translate-y-1 active:shadow-none hover:bg-slate-50 font-mono text-2xl w-14 h-14 flex items-center justify-center cursor-pointer select-none",
+    "cards": "Clean surface. bg-white rounded-xl border border-slate-200 shadow-sm p-6.",
+    "buttons": {
+      "primary": "bg-slate-900 text-white rounded-lg px-6 py-3 font-semibold hover:bg-slate-800 transition-colors",
+      "secondary": "bg-white text-slate-900 border border-slate-200 rounded-lg px-6 py-3 font-semibold hover:bg-slate-50 transition-colors",
+      "action": "bg-emerald-500 text-white rounded-lg px-6 py-3 font-bold hover:bg-emerald-600 shadow-[0_4px_0_0_#059669] active:translate-y-1 active:shadow-none"
+    },
+    "difficulty_badges": "Small pill shapes. px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full. Color corresponds to tiers."
+  },
+  "motion_and_interaction": {
+    "hover_states": "All interactive elements must change state.",
+    "puzzle_feedback": "On correct answer: slight scale-up bounce, text turns emerald. On incorrect answer: rapid horizontal shake (x-axis), text turns red, definition card slides down.",
+    "page_transitions": "Fade-in with slight translate-y upward for new levels or dashboard load."
+  },
+  "media_assets": {
+    "hero_background": {
+      "url": "https://images.unsplash.com/photo-1655704705321-3ac52dc67f70?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzV8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMHB1enpsZSUyMGdhbWV8ZW58MHx8fHwxNzgxMDUzMTEwfDA&ixlib=rb-4.1.0&q=85",
+      "description": "Abstract shapes to be used lightly behind hero text or auth forms"
+    },
+    "student_hero": {
+      "url": "https://images.unsplash.com/photo-1515378960530-7c0da6231fb1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwdXNpbmclMjBsYXB0b3AlMjBmb2N1c3xlbnwwfHx8fDE3ODEwNTMwOTJ8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Focus student on laptop for the landing page hero section"
+    },
+    "trophy_icon": {
+      "url": "https://images.unsplash.com/photo-1578269174936-2709b6aeb913?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHwxfHxnb2xkJTIwdHJvcGh5JTIwc3VjY2Vzc3xlbnwwfHx8fDE3ODEwNTMxMTB8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Gold trophy to be used in achievements or leaderboard empty states"
+    },
+    "abstract_puzzle_texture": {
+      "url": "https://images.pexels.com/photos/4124718/pexels-photo-4124718.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Puzzle piece texture for decorative banners or level up screens"
+    }
+  },
+  "testing_conventions": {
+    "rule": "All interactive elements must include a data-testid attribute in kebab-case based on their role.",
+    "examples": [
+      "data-testid='login-submit-button'",
+      "data-testid='puzzle-tile-letter-a'",
+      "data-testid='submit-answer-button'",
+      "data-testid='skip-puzzle-button'",
+      "data-testid='level-card-beginner'"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Install and configure fonts: Outfit, IBM Plex Sans, and JetBrains Mono.",
+    "Implement Shadcn UI for standard components (Dropdowns, Dialogs) but heavily customize them to match the border/shadow styling defined above.",
+    "Build the Anagram Tiles from scratch using pure HTML/Tailwind classes provided in 'anagram_tiles' to ensure tactile feel.",
+    "Implement contextual feedback layout: When wrong answer is submitted, animate a definition card appearing smoothly under the puzzle.",
+    "Dashboards must use the Bento Grid strategy. Top left is primary metric (Current Points/Level).",
+    "Ensure all buttons and inputs have the required data-testid."
+  ]
+}
